@@ -11,7 +11,7 @@ import smtplib
 from email.message import EmailMessage
 
 
-crud_app = FastAPI()
+app = FastAPI()
 
 sqliteConnection = sqlite3.connect(r'C:\Users\naiti\OneDrive\Desktop\AI Project-2\Project-1\user_project_data.db')
 
@@ -90,7 +90,7 @@ async def check_userid(user_id, table_name):
     return False
 
 # This endpoint creates a new user
-@crud_app.post("/add_user/")
+@app.post("/add_user/")
 async def create_user(request: Request, project_id: int):
     try:
         user_data = await request.json()
@@ -145,7 +145,7 @@ async def create_user(request: Request, project_id: int):
 
 
 # This endpoint is for retrieving all user details
-@crud_app.get("/get_users")
+@app.get("/get_users")
 async def get_users(project_id: int):
     table_name = None
     table_schema = None
@@ -170,7 +170,7 @@ async def get_users(project_id: int):
 
 
 # This endpoint is for updating the user details
-@crud_app.patch("/update_user/{user_id}")
+@app.patch("/update_user/{user_id}")
 async def update_user(request: Request, user_id: int, project_id: int):
     try:
         user_data = await request.json()
@@ -252,7 +252,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
 
 
 # This endpoint is for deleting a user
-@crud_app.delete("/delete_user/{user_id}")
+@app.delete("/delete_user/{user_id}")
 async def delete_user(user_id: int, project_id: int):
     table_name = None
     if project_id==1:
@@ -288,7 +288,7 @@ def decrypt_password(password):
 
 
 # This endpoint is for sending email for api documentation
-@crud_app.post("/send_mail/")
+@app.post("/send_mail/")
 async def send_mail():
     EMAIL_USER = "naitiksoni1705@gmail.com"
     EMAIL_PASS = decrypt_password("S^c]OTc]MPXaUTac")
