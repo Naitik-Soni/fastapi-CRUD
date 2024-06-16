@@ -13,7 +13,7 @@ from email.message import EmailMessage
 
 app = FastAPI()
 
-sqliteConnection = sqlite3.connect(r'C:\Users\naiti\OneDrive\Desktop\AI Project-2\Project-1\user_project_data.db')
+sqliteConnection = sqlite3.connect(r'https://github.com/Naitik-Soni/fastapi-CRUD/blob/main/user_project_data.db')
 
 cursor = sqliteConnection.cursor()
 
@@ -21,7 +21,7 @@ user_table_a = "USER_PROJECT_A"
 user_table_b = "USER_PROJECT_B"
 user_table_c = "USER_PROJECT_C"
 
-receiver_emails = ["naitiksoni.ai@gmail.com", "naitiksoni1705@gmail.com"] #["shraddha@aviato.consulting", "pooja@aviato.consulting"]
+receiver_emails = ["naitiksoni1705@gmail.com"] #["shraddha@aviato.consulting", "pooja@aviato.consulting"]
 
 salt = "dbjk#NOI32%#VWA@SDcw3@&"
 
@@ -300,7 +300,7 @@ async def send_mail():
 
     text = """
         Hi, here is the link to the api documentation of APIs created
-        Link: {http/://127.0.0.1:8000/redoc}
+        Link: {https://naitiksoni-fastapi-crud.onrender.com/redoc}
     """
     msg.set_content(text)
 
