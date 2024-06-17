@@ -13,7 +13,8 @@ from email.message import EmailMessage
 
 app = FastAPI()
 
-sqliteConnection = sqlite3.connect(r'https://github.com/Naitik-Soni/fastapi-CRUD/blob/main/user_project_data.db')
+DB_PATH = "r'https://github.com/Naitik-Soni/fastapi-CRUD/blob/main/user_project_data.db"
+sqliteConnection = sqlite3.connect(DB_PATH)
 
 cursor = sqliteConnection.cursor()
 
@@ -85,7 +86,7 @@ async def check_userid(user_id, table_name):
     query = f"SELECT 1 FROM {table_name} WHERE ID = {user_id};"
     cursor.execute(query)
     if cursor.fetchone():
-        await cursor.execute("COMMIT")
+        await sqliteConnection.commit()
         return True
     return False
 
@@ -137,7 +138,7 @@ async def create_user(request: Request, project_id: int):
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
     
-    cursor.execute("COMMIT")
+    sqliteConnection.commit()
     user_data["project_id"] = project_id
     print(f"LOG: New user added, user details: {user_data}")
     
@@ -147,17 +148,17 @@ async def create_user(request: Request, project_id: int):
 # This endpoint is for retrieving all user details
 @app.get("/get_users")
 async def get_users(project_id: int):
-    table_name = None
-    table_schema = None
+    table_name = ""
+    table_schema = []
     if project_id==1:
-        table_name = user_table_a
-        table_schema = ['user_id', 'company_name', 'first_name', 'last_name', 'email', 'password']
+        table_name += user_table_a
+        table_schema.extend(['user_id', 'company_name', 'first_name', 'last_name', 'email', 'password'])
     elif project_id==2:
-        table_name = user_table_b
-        table_schema = ['user_id', 'phone_mumber', 'first_name', 'last_name', 'hashtag']
+        table_name += user_table_b
+        table_schema.extend(['user_id', 'phone_mumber', 'first_name', 'last_name', 'hashtag'])
     elif project_id==3:
-        table_name = user_table_c
-        table_schema = ['user_id', 'phone_number', 'first_name', 'last_name', 'dob']
+        table_name += user_table_c
+        table_schema.extend(['user_id', 'phone_number', 'first_name', 'last_name', 'dob'])
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
 
@@ -243,7 +244,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
     
-    await cursor.execute("COMMIT")
+    await sqliteConnection.commit()
     user_data["user_id"] = user_id
     user_data["project_id"] = project_id
     print(f"LOG: User updated details, user details: {user_data}")
@@ -254,13 +255,13 @@ async def update_user(request: Request, user_id: int, project_id: int):
 # This endpoint is for deleting a user
 @app.delete("/delete_user/{user_id}")
 async def delete_user(user_id: int, project_id: int):
-    table_name = None
+    table_name = ""
     if project_id==1:
-        table_name = user_table_a
+        table_name += user_table_a
     elif project_id==2:
-        table_name = user_table_b
+        table_name += user_table_b
     elif project_id==3:
-        table_name = user_table_c
+        table_name += user_table_c
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
 
@@ -269,7 +270,7 @@ async def delete_user(user_id: int, project_id: int):
 
     query = f"DELETE FROM {table_name} WHERE id = {user_id}"
     cursor.execute(query)
-    await cursor.execute("COMMIT")
+    await sqliteConnection.commit()
     print(f"LOG: User with user_id={user_id} deleted successfully from project={project_id}")
     
     return {"message": f"User with user_id={user_id} deleted successfully"}
