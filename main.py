@@ -13,7 +13,7 @@ from email.message import EmailMessage
 
 app = FastAPI()
 
-DB_PATH = "r'https://github.com/Naitik-Soni/fastapi-CRUD/blob/main/user_project_data.db"
+DB_PATH = r"C:\Users\naiti\OneDrive\Desktop\AI Project-2\Project-1\user_project_data.sqlite"
 sqliteConnection = sqlite3.connect(DB_PATH)
 
 cursor = sqliteConnection.cursor()
@@ -86,7 +86,7 @@ async def check_userid(user_id, table_name):
     query = f"SELECT 1 FROM {table_name} WHERE ID = {user_id};"
     cursor.execute(query)
     if cursor.fetchone():
-        await sqliteConnection.commit()
+        sqliteConnection.commit()
         return True
     return False
 
@@ -189,7 +189,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
     last_name = user_data["last_name"]
 
     if project_id==1:
-        if not asyncio.run(check_userid(user_id, user_table_a)):
+        if not await check_userid(user_id, user_table_a):
             return {"message": f"User with user_id={user_id} doesn't exist"}
         
         company_name = user_data["company_name"]
@@ -208,7 +208,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
         cursor.execute(query, (company_name, first_name, last_name, email, password))
 
     elif project_id==2:
-        if not asyncio.run(check_userid(user_id, user_table_b)):
+        if not await check_userid(user_id, user_table_b):
             return {"message": f"User with user_id={user_id} doesn't exist"}
 
         mobile_number = user_data["phone_number"]
@@ -225,7 +225,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
         cursor.execute(query, (mobile_number, first_name, last_name, hashtag))
 
     elif project_id==3:
-        if not asyncio.run(check_userid(user_id, user_table_c)):
+        if not await check_userid(user_id, user_table_c):
             return {"message": f"User with user_id={user_id} doesn't exist"}
 
         mobile_number = user_data["phone_number"]
@@ -244,7 +244,7 @@ async def update_user(request: Request, user_id: int, project_id: int):
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
     
-    await sqliteConnection.commit()
+    sqliteConnection.commit()
     user_data["user_id"] = user_id
     user_data["project_id"] = project_id
     print(f"LOG: User updated details, user details: {user_data}")
@@ -265,12 +265,12 @@ async def delete_user(user_id: int, project_id: int):
     else:
         raise HTTPException(status_code=400, detail="Invalid project_id given")
 
-    if not check_userid(user_id, project_id):
+    if not await check_userid(user_id, table_name):
         return {"message": f"User with user_id={user_id} doesn't exist"}
 
     query = f"DELETE FROM {table_name} WHERE id = {user_id}"
     cursor.execute(query)
-    await sqliteConnection.commit()
+    sqliteConnection.commit()
     print(f"LOG: User with user_id={user_id} deleted successfully from project={project_id}")
     
     return {"message": f"User with user_id={user_id} deleted successfully"}
